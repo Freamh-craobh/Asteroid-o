@@ -1,7 +1,7 @@
 import pygame, player, asteroid, asteroidfield, shot
 from constants import SCREEN_HEIGHT, SCREEN_WIDTH
 from logger import log_state, log_event
-import constants, sys
+import constants, sys, display
 
 
 
@@ -18,6 +18,7 @@ def main():
     asteroid.Asteroid.containers = (asteroids, updatable, drawable)
     asteroidfield.AsteroidField.containers = (updatable)
     shot.Shot.containers = (shots, updatable, drawable)
+    display.Display.containers = (drawable)
 
     pygame.init()
     clock = pygame.time.Clock()
@@ -25,6 +26,7 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     player1 = player.Player(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
     asteroid_field = asteroidfield.AsteroidField()
+    overlay = display.Display(0)
 
     while True:
         log_state()
@@ -44,6 +46,15 @@ def main():
                 log_event("player_hit")
                 print("Game Over")
                 sys.exit()
+            for bullet in shots:
+                if bullet.colides_with(obj):
+                    log_event("asteroid_shot")
+                    bullet.kill()
+                    obj.split()
+                    overlay.score += 1
+
+        
+
 
         
         pygame.display.flip()
